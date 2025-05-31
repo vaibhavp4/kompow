@@ -5,7 +5,7 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 # from agno.tools.misc import CodeInterpreter # Example if tools were needed
 
-from utils.knowledge_base import get_user_knowledge_base, query_knowledge_base, Document # Make sure Document is imported if used for type hinting
+from utils.knowledge_base import get_user_knowledge_base, query_knowledge_base, ActualAgnoDocument as Document # Use the (potentially dummy) Document
 
 # Define a placeholder for get_all_documents if needed.
 # For now, we'll rely on query_knowledge_base with a broad query.
@@ -68,7 +68,7 @@ class LearningProfileAgent(Agent):
         # Fetch documents from the user's KB.
         # Using a generic query and a high limit to simulate fetching "all" or "most relevant" documents.
         # A more sophisticated approach might be needed for very large KBs.
-        documents: list[Document] = query_knowledge_base(self.kb, query=query_str, limit=max_docs)
+        documents: list[Document] = query_knowledge_base(self.kb, query_text=query_str, limit=max_docs)
 
         if not documents:
             return "No documents found in the user's knowledge base. Cannot analyze profile."

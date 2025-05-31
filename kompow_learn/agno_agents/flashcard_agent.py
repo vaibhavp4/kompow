@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import json
+import re # Added import for regular expressions
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
@@ -43,16 +44,17 @@ class FlashcardGenerationAgent(Agent):
             ),
             model=OpenAIChat(
                 id=self.model_id,
-                api_key=api_key,
-                # model_kwargs=model_params # This is how some frameworks pass extra params, check Agno docs
+                api_key=api_key
+                # model_kwargs cannot be passed to Agno's OpenAIChat as of current understanding.
+                # JSON output will rely on prompt engineering.
             ),
             # No tools needed for this agent by default
             **kwargs
         )
-        # If model_params cannot be passed directly, we might need to adjust the prompt further
-        # or handle cases where the output is not perfect JSON.
-        if not model_params:
-             print(f"Warning: Model {self.model_id} may not support forced JSON output mode directly via Agno. JSON format relies heavily on prompt adherence.")
+        # Print a notice if model_params had content, indicating we can't enforce JSON mode via API.
+        if model_params:
+             print(f"Notice: For model {self.model_id}, JSON output mode was intended but Agno's OpenAIChat "
+                   f"wrapper may not support passing 'response_format'. JSON output relies on prompt adherence.")
 
 
     def generate_flashcards_from_text(self, text_content: str, max_flashcards: int = 10) -> list[dict] | str:
